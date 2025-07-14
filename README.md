@@ -56,7 +56,7 @@ An AI-powered resume companion that helps users upload and analyze their resumes
    Scores based on content sections + alignment.  
    Uses LLM for summary evaluation + TextGears for grammar.
 
----
+
 ## LLM Prompting (LangChain)
 LLMChain: For cover letter and Q&A feedback
 
@@ -69,6 +69,7 @@ RetrievalQA: Simple RAG fallback model
 
 ## 📂 Project Structure
 
+```text
 📂 app/
 ├── resume_parser.py               # Extracts raw text from PDF (OCR fallback)
 ├── structured_extractor.py       # LLM: Converts resume text → JSON
@@ -88,11 +89,7 @@ RetrievalQA: Simple RAG fallback model
 ├── 5_ATS_Insights.py             # ATS checker and resume analysis
 
 main.py                           # Streamlit entry point with navigation
-
-
-
-
----
+```
 
 ##  Installation & Run Locally
 
