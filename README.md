@@ -1,4 +1,4 @@
-AI Resume Assistant
+## AI Resume Assistant
 An AI-powered resume companion that helps users upload and analyze their resumes, generate tailored cover letters, simulate interviews, and evaluate ATS (Applicant Tracking System) scores — all using **open-source LLMs, LangChain, FAISS**, and modern NLP pipelines.
 
 ---
