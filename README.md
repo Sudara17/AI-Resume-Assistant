@@ -57,6 +57,15 @@ An AI-powered resume companion that helps users upload and analyze their resumes
    Uses LLM for summary evaluation + TextGears for grammar.
 
 ---
+## LLM Prompting (LangChain)
+LLMChain: For cover letter and Q&A feedback
+
+PromptTemplate: Custom system prompts for structured JSON, mock scores, etc.
+
+ConversationalRetrievalChain: For resume chatbot with memory
+
+RetrievalQA: Simple RAG fallback model
+
 
 ## 📂 Project Structure
 
@@ -96,17 +105,12 @@ streamlit run main.py
  Make sure to set your Groq API key in groq_llm.py.
 
 
-##  Demo
+## Demo
 
-👉 [Click to watch the demo](https://user-images.githubusercontent.com/.../demo.mp4)
+Here’s a screen recording of the issue in action:
+
+[▶️ Watch the screen recording on Google Drive](https://drive.google.com/file/d/1TEx9IfwbKiBtHbcY1s4uE2fWuqBtYbBL/view?usp=sharing)
 
 
-## LLM Prompting (LangChain)
-LLMChain: For cover letter and Q&A feedback
 
-PromptTemplate: Custom system prompts for structured JSON, mock scores, etc.
-
-ConversationalRetrievalChain: For resume chatbot with memory
-
-RetrievalQA: Simple RAG fallback model
 
