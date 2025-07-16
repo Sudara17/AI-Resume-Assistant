@@ -6,10 +6,14 @@ langchain
 langchain-community
 langchain-core
 ollama
-sentence-transformers
 faiss-cpu
 langchain
 streamlit
 langchain_groq
 torch==2.1.0
 sentence-transformers==2.2.2
+json5
+python-docx
+fpdf
+altair
+requests
