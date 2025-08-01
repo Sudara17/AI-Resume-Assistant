@@ -43,7 +43,7 @@ retriever = db.as_retriever()
 #  Groq LLM and Memory 
 llm = ChatGroq(
     model="llama3-8b-8192",
-    api_key="YOUR_GROQ_API_KEY_HERE"
+    api_key=os.environ.get("GROQ_API_KEY")
 )
 
 if "chat_memory" not in st.session_state:
