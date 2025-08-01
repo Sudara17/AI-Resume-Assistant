@@ -40,8 +40,8 @@ Also give a 1–2 sentence explanation.
 
 # Grammar & Spelling Checker using TextGears with whitelist
 def grammar_and_spelling_feedback(text):
-    api_key = "TEXTGEARS_API_KEY_HERE"
     url = "https://api.textgears.com/grammar"
+    textgears_api_key = os.environ.get("TEXTGEARS_API_KEY")
 
     TECH_TERMS = {
         "css", "js", "html", "sql", "mysql", "nosql", "api", "apis", "restful",
@@ -135,7 +135,7 @@ resume_text = st.session_state.resume_text
 resume_json = st.session_state.resume_json
 
 # Groq API Key
-groq_api_key = "YOUR_GROQ_API_KEY_HERE"
+groq_api_key = os.environ.get("GROQ_API_KEY")
 
 # Job Role Dropdown
 job_roles = list(JD_KEYWORDS.keys())
