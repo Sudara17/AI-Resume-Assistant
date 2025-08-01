@@ -1,4 +1,5 @@
 from langchain_groq import ChatGroq
+import os
 
 def get_groq_llm(model="llama3-8b-8192"):
     return ChatGroq(
