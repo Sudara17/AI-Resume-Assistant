@@ -7,7 +7,6 @@ langchain-community
 langchain-core
 ollama
 faiss-cpu
-langchain
 streamlit
 langchain_groq
 torch==2.1.0
@@ -17,3 +16,4 @@ python-docx
 fpdf
 altair
 requests
+streamlit-extras
