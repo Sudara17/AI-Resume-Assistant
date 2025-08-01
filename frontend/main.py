@@ -2,7 +2,6 @@ import sys, os
 sys.path.append(os.path.abspath("app"))
 
 from streamlit_extras.switch_page_button import switch_page
-
 import streamlit as st
 
 st.set_page_config(page_title="AI Resume Assistant", layout="wide")
@@ -19,7 +18,7 @@ with st.sidebar:
     st.page_link("pages/4_Interview_Questions.py", label="Interview Questions")
     st.page_link("pages/5_ATS_Insights.py", label="ATS Insights & Resume Score")
     st.page_link("pages/3_Cover_Letter.py", label="Cover Letter Generator")
- 
+
 #  CSS to make the buttons larger and nicely styled
 st.markdown("""
     <style>
@@ -32,12 +31,12 @@ st.markdown("""
     }
 
     .stButton > button {
-        width: 270px;         /* Wider button */
-        height: 110px;        /* Taller button */
+        width: 270px;
+        height: 110px;
         border-radius: 18px;
         background-color: #f4f6fa;
         border: 1px solid #e0e0e0;
-        font-size: 1.3rem;     /* Larger text */
+        font-size: 1.3rem;
         font-weight: 600;
         box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
         transition: all 0.3s ease;
@@ -64,37 +63,29 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-#  Button Layout – One row
+# Button Layout – One row
 st.markdown('<div class="horizontal-buttons">', unsafe_allow_html=True)
 
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     if st.button("Upload Resume"):
-        st.switch_page("pages/1_Upload_Resume.py")
+        switch_page("Upload Resume")
 
 with col2:
     if st.button("Chatbot"):
-        st.switch_page("pages/2_Chatbot_QA.py")
-        
+        switch_page("Chatbot")
+
 with col1:
     if st.button("Cover Letter"):
-        st.switch_page("pages/3_Cover_Letter.py")
-
+        switch_page("Cover Letter Generator")
 
 with col3:
     if st.button("Interview Questions"):
-        st.switch_page("pages/4_Interview_Questions.py")
+        switch_page("Interview Questions")
 
 with col4:
     if st.button("ATS"):
-        st.switch_page("pages/5_ATS_Insights.py")
-
+        switch_page("ATS Insights & Resume Score")
 
 st.markdown('</div>', unsafe_allow_html=True)
-
-
-
-
-
-
