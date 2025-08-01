@@ -2,12 +2,13 @@ services:
   - type: web
     name: ai-resume-assistant
     env: python
+    region: oregon
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: streamlit run frontend/main.py
+    startCommand: streamlit run frontend/main.py --server.port $PORT --server.address 0.0.0.0
+    pythonVersion: 3.10.13
     envVars:
       - key: TEXTGEARS_API_KEY
         sync: false
       - key: GROQ_API_KEY
         sync: false
-    pythonVersion: 3.10.13
