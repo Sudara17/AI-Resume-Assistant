@@ -1,3 +1,8 @@
+import sys, os
+sys.path.append(os.path.abspath("app"))
+
+from streamlit_extras.switch_page_button import switch_page
+
 import streamlit as st
 
 st.set_page_config(page_title="AI Resume Assistant", layout="wide")
