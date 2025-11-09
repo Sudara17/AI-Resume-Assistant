@@ -37,7 +37,7 @@ JSON Output:
 """
 
     prompt = PromptTemplate(input_variables=["resume_text"], template=template)
-    llm = get_groq_llm("llama3-8b-8192")
+    llm = get_groq_llm("llama-3.1-8b-instant")
     chain = LLMChain(prompt=prompt, llm=llm)
 
     raw_output = chain.run({"resume_text": resume_text})
@@ -81,3 +81,4 @@ def ensure_all_keys(parsed_json):
         if key not in parsed_json:
             parsed_json[key] = "" if key in ["name", "email", "phone", "location", "linkedin", "github", "summary"] else []
     return parsed_json
+
