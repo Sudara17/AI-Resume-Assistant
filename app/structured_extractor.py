@@ -1,16 +1,9 @@
 # app/structured_extractor.py
 from langchain_core.prompts import PromptTemplate
-try:
-    # Works on most LC 1.x installs
-    from langchain.chains import LLMChain
-except Exception:
-    # Fallback if your distribution splits modules differently
-    from langchain.chains.llm import LLMChain
-
+from langchain_core.output_parsers import StrOutputParser
 from app.groq_llm import get_groq_llm
 import json
 import json5
-
 
 def extract_resume_json(resume_text: str):
     resume_text = (resume_text or "")[:8000]
@@ -44,21 +37,19 @@ Resume:
 JSON Output:
 """
     prompt = PromptTemplate(input_variables=["resume_text"], template=template)
-    llm = get_groq_llm()  # uses the default model from groq_llm.py
-    chain = LLMChain(prompt=prompt, llm=llm)
+    llm = get_groq_llm()  # default model set in groq_llm.py
+    chain = prompt | llm | StrOutputParser()
 
-    raw_output = chain.run({"resume_text": resume_text})
+    raw_output = chain.invoke({"resume_text": resume_text})
     print("[Raw LLM Output]", raw_output)
 
     parsed_json = extract_json_from_text(raw_output)
     parsed_json = ensure_all_keys(parsed_json)
     return parsed_json
 
-
 def extract_json_from_text(text: str):
     stack = []
     start = None
-
     for i, char in enumerate(text):
         if char == '{':
             if start is None:
@@ -79,7 +70,6 @@ def extract_json_from_text(text: str):
                             print("[json5 Failed]", json5_err)
                             return {"error": "Could not parse JSON"}
     return {"error": "No valid JSON found in response."}
-
 
 def ensure_all_keys(parsed_json: dict):
     keys = [
