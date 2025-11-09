@@ -1,5 +1,5 @@
 from app.groq_llm import get_groq_llm
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 from langchain.chains import LLMChain
 
 def generate_cover_letter(resume, job_description, company, job_title, tone, paragraphs):
@@ -43,4 +43,5 @@ Keep it professional, customized, and well-structured.
         "job_description": job_description,
         "tone": tone,
         "paragraphs": paragraphs
+
     })   
