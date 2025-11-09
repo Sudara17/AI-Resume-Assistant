@@ -1,4 +1,4 @@
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from app.groq_llm import get_groq_llm
 
@@ -30,3 +30,4 @@ Resume:
 
     chain = LLMChain(prompt=question_prompt, llm=llm)
     return chain.run({"resume": resume_text})
+
