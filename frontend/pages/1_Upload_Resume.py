@@ -2,9 +2,9 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
+from app.structured_extractor import extract_resume_json
 import streamlit as st
 from app.resume_parser import extract_text_from_pdf
-from app.structured_extractor import extract_resume_json
 
 st.set_page_config(page_title="Upload Resume", layout="wide")
 st.title(" Upload a Resume")
@@ -37,5 +37,6 @@ if "resume_json" in st.session_state:
         st.json(st.session_state.resume_json)
 else:
     st.info(" Please upload a resume to view parsed information.")
+
 
 
