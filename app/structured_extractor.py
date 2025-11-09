@@ -1,4 +1,4 @@
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from app.groq_llm import get_groq_llm  
 import json
@@ -81,4 +81,5 @@ def ensure_all_keys(parsed_json):
         if key not in parsed_json:
             parsed_json[key] = "" if key in ["name", "email", "phone", "location", "linkedin", "github", "summary"] else []
     return parsed_json
+
 
