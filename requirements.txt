@@ -19,4 +19,6 @@ fpdf
 altair
 requests
 streamlit-extras
+langchain-groq>=0.1.6
+groq>=0.22.0
 
