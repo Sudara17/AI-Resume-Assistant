@@ -1,5 +1,5 @@
 # app/rag_chatbot.py
-
+from langchain_core.prompts import PromptTemplate
 from langchain_groq import ChatGroq
 from langchain.chains import RetrievalQA
 from langchain_community.vectorstores import FAISS
@@ -25,5 +25,6 @@ def get_rag_qa_chain(api_key):
     retriever = db.as_retriever()
     llm = ChatGroq(api_key=api_key, model_name="llama3-8b-8192")
     return RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+
 
 
