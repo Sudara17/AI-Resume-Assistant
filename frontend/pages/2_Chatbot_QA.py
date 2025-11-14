@@ -1,5 +1,12 @@
 # frontend/pages/2_Chatbot_QA.py
 import os
+os.environ["TRANSFORMERS_CACHE"] = "/tmp"
+os.environ["HF_HOME"] = "/tmp"
+os.environ["HUGGINGFACE_HUB_CACHE"] = "/tmp"
+os.environ["TORCH_HOME"] = "/tmp"
+os.environ["SENTENCE_TRANSFORMERS_HOME"] = "/tmp"
+
+import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
@@ -36,9 +43,12 @@ vectorstore_path = "data/resume_embeddings.pkl"
 if "vectorstore_built" not in st.session_state:
     with st.spinner("Building vectorstore..."):
         embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2",
-            model_kwargs={"device": "cpu"}
-        )
+    model_name="sentence-transformers/all-MiniLM-L6-v2",
+    model_kwargs={"device": "cpu"},
+    encode_kwargs={
+        "normalize_embeddings": True
+    }
+)
         db = FAISS.from_texts([resume_text], embedding=embeddings)
         with open(vectorstore_path, "wb") as f:
             pickle.dump(db, f)
@@ -159,3 +169,4 @@ if st.button(" Clear Chat"):
     st.session_state.chat_messages = []
     st.session_state.chat_memory = []
     st.success("Chat cleared.")
+
