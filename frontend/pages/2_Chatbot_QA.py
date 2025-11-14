@@ -1,14 +1,14 @@
 # frontend/pages/2_Chatbot_QA.py
 import os
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+
 # Force HF/cache downloads to /tmp on Render (writable)
 os.environ["TRANSFORMERS_CACHE"] = "/tmp"
 os.environ["HF_HOME"] = "/tmp"
 os.environ["HUGGINGFACE_HUB_CACHE"] = "/tmp"
 os.environ["TORCH_HOME"] = "/tmp"
 os.environ["SENTENCE_TRANSFORMERS_HOME"] = "/tmp"
-
-import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 import pickle
 import streamlit as st
@@ -154,3 +154,4 @@ if st.button(" Clear Chat"):
     st.session_state.chat_messages = []
     st.session_state.chat_memory = []
     st.success("Chat cleared.")
+
