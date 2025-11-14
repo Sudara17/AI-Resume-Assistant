@@ -1,14 +1,13 @@
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+
 import streamlit as st
 from app.cover_letter_generator import generate_cover_letter
 from io import BytesIO
 from docx import Document
 from fpdf import FPDF
 import tempfile
-import os
-import sys
-
-# Fix module import error
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 st.set_page_config(page_title="AI Cover Letter Generator", layout="wide")
 st.title("AI Cover Letter Generator")
@@ -86,4 +85,5 @@ if "generated_letter" in st.session_state:
     doc.save(doc_buffer)
     doc_buffer.seek(0)
     st.download_button("Download as Word (.docx)", doc_buffer, file_name="cover_letter.docx")
+
 
