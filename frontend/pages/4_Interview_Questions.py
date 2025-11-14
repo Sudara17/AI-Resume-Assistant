@@ -1,15 +1,18 @@
 # same imports
-import os
-import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 import re
 import html
 import streamlit as st
+
+# Your helper file
 from app.interview_question_gen import generate_interview_questions
 from app.groq_llm import get_groq_llm
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
+
+# FIXED LangChain imports
+from langchain_core.prompts import PromptTemplate
+from langchain.chains.llm import LLMChain
 
 st.set_page_config(page_title="Interview Questions", layout="wide")
 st.title("Interview Questions Generator & Mock Practice")
@@ -199,3 +202,4 @@ if st.button("Restart Mock Interview"):
     for key in ["mock_questions", "mock_history", "current_q_index", "interview_questions_raw"]:
         st.session_state.pop(key, None)
     st.rerun()
+
