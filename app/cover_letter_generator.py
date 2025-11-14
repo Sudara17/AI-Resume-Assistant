@@ -1,11 +1,12 @@
+# app/cover_letter_generator.py
+from typing import Any
 from app.groq_llm import get_groq_llm
 from langchain_core.prompts import PromptTemplate
-from langchain.chains import LLMChain
 
-def generate_cover_letter(resume, job_description, company, job_title, tone, paragraphs):
+def generate_cover_letter(resume: Any, job_description: str, company: str, job_title: str, tone: str, paragraphs: str) -> str:
     summary = resume.get("summary", "")
     skills = ", ".join(resume.get("skills", []))
-    
+
     # Safe handling for education
     education_list = resume.get("education", [])
     if education_list and isinstance(education_list[0], dict):
@@ -33,15 +34,39 @@ Keep it professional, customized, and well-structured.
     )
 
     llm = get_groq_llm()
-    chain = LLMChain(prompt=prompt, llm=llm)
-    return chain.run({
-        "job_title": job_title,
-        "company": company,
-        "skills": skills,
-        "education": education,
-        "summary": summary,
-        "job_description": job_description,
-        "tone": tone,
-        "paragraphs": paragraphs
 
-    })   
+    # Preferred pipeline usage (PromptTemplate | llm)
+    try:
+        chain = prompt | llm
+        result = chain.invoke({
+            "job_title": job_title,
+            "company": company,
+            "skills": skills,
+            "education": education,
+            "summary": summary,
+            "job_description": job_description,
+            "tone": tone,
+            "paragraphs": paragraphs
+        })
+    except Exception:
+        # Fallback: format prompt and call LLM directly
+        try:
+            final_prompt = prompt.format(
+                job_title=job_title,
+                company=company,
+                skills=skills,
+                education=education,
+                summary=summary,
+                job_description=job_description,
+                tone=tone,
+                paragraphs=paragraphs
+            )
+            resp = llm(final_prompt)
+            result = resp
+        except Exception as e:
+            return f"Error calling LLM: {e}"
+
+    # Normalize to string
+    if isinstance(result, dict):
+        return result.get("output_text") or result.get("text") or str(result)
+    return str(result)
