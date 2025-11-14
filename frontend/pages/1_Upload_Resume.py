@@ -1,42 +1,58 @@
-import sys
+# frontend/pages/1_Upload_Resume.py
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-
-from app.structured_extractor import extract_resume_json
 import streamlit as st
-from app.resume_parser import extract_text_from_pdf
+import fitz  # PyMuPDF
+from app.structured_extractor import extract_resume_json
 
 st.set_page_config(page_title="Upload Resume", layout="wide")
-st.title(" Upload a Resume")
+st.title("Upload Resume")
 
-uploaded_file = st.file_uploader("Upload a Resume (PDF)", type=["pdf"])
+uploaded_file = st.file_uploader("Upload a Resume (PDF)", type=["pdf"], help="Limit 200MB per file • PDF")
+if not uploaded_file:
+    st.info("Please upload a PDF resume to continue.")
+    st.stop()
 
-# Run extraction only on new file
-if uploaded_file and (uploaded_file.name != st.session_state.get("resume_filename")):
-    st.success(" Resume file uploaded successfully")
+# Save uploaded file to a temp path so we can read with PyMuPDF
+upload_dir = "uploads"
+os.makedirs(upload_dir, exist_ok=True)
+saved_path = os.path.join(upload_dir, uploaded_file.name)
+with open(saved_path, "wb") as f:
+    f.write(uploaded_file.getbuffer())
 
-    raw_text = extract_text_from_pdf(uploaded_file)
-    st.success(" Resume text extracted")
+st.success("Resume file uploaded successfully")
 
-    with st.spinner(" Extracting structured resume data using LLM..."):
-        resume_json = extract_resume_json(raw_text)
+# Extract text using PyMuPDF
+def extract_text_from_pdf(path: str) -> str:
+    text = ""
+    try:
+        with fitz.open(path) as doc:
+            for page in doc:
+                page_text = page.get_text("text")
+                if page_text:
+                    text += page_text + "\n"
+    except Exception as e:
+        st.error(f"Error extracting text from PDF: {e}")
+    return text
 
-    st.success(" Resume parsed to JSON")
+with st.spinner("Resume text extracted"):
+    resume_text = extract_text_from_pdf(saved_path)
+    if not resume_text.strip():
+        st.error("Could not extract text from the uploaded PDF. Try a different resume.")
+        st.stop()
+    st.success("Resume text extracted")
 
-    # Save in session state
-    st.session_state.resume_filename = uploaded_file.name
-    st.session_state.resume_text = raw_text
-    st.session_state.resume_json = resume_json
+# Parse using your existing structured extractor (returns JSON/dict)
+with st.spinner("Resume parsed to JSON"):
+    parsed_json = extract_resume_json(resume_text)
+    st.success("Resume parsed to JSON")
 
-# Show previously extracted data if exists
-if "resume_json" in st.session_state:
-    st.subheader(" Extracted Resume Data")
-    if "error" in st.session_state.resume_json:
-        st.error(f" JSON Parse Error: {st.session_state.resume_json['error']}")
-    else:
-        st.json(st.session_state.resume_json)
-else:
-    st.info(" Please upload a resume to view parsed information.")
+# Display extracted JSON (collapsible)
+st.subheader("Extracted Resume Data")
+st.json(parsed_json)
 
+# Save into session state so other pages (chatbot etc.) can reuse it
+st.session_state["resume_text"] = resume_text
+st.session_state["resume_filename"] = uploaded_file.name
+st.session_state["parsed_resume_json"] = parsed_json
 
-
+st.info("Resume stored for other modules (Chatbot, ATS Insights, Cover Letter).")
