@@ -1,5 +1,8 @@
 # frontend/pages/1_Upload_Resume.py
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+
 import streamlit as st
 import fitz  # PyMuPDF
 from app.structured_extractor import extract_resume_json
@@ -56,3 +59,4 @@ st.session_state["resume_filename"] = uploaded_file.name
 st.session_state["parsed_resume_json"] = parsed_json
 
 st.info("Resume stored for other modules (Chatbot, ATS Insights, Cover Letter).")
+
