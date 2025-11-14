@@ -6,9 +6,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'
 import sentence_transformers 
 import streamlit as st
 
-
+from langchain.chains.conversational_retrieval import ConversationalRetrievalChain
 from langchain_groq import ChatGroq
-from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
@@ -98,3 +97,4 @@ if st.button(" Clear Chat"):
     st.session_state.chat_memory = ConversationBufferMemory(
         memory_key="chat_history", return_messages=True
     )
+
