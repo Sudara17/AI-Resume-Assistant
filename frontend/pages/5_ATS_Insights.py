@@ -7,14 +7,16 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 import streamlit as st
 import re
 import altair as alt
-from app.jd_keywords import JD_KEYWORDS
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
-from langchain_groq import ChatGroq
 import requests
-from app.ats_score import calculate_ats_score
 import json
+
 from app.jd_keywords import JD_KEYWORDS
+from app.ats_score import calculate_ats_score
+from app.groq_llm import get_groq_llm
+
+# LangChain (fixed)
+from langchain_core.prompts import PromptTemplate
+
 
 # Resume Summary Analysis (LLM)
 def check_summary_alignment(summary_text, role, api_key):
@@ -234,6 +236,7 @@ chart = alt.Chart(alt.Data(values=data)).mark_bar().encode(
     color=alt.Color("index:N", legend=None)
 ).properties(width=600)
 st.altair_chart(chart, use_container_width=True)
+
 
 
 
