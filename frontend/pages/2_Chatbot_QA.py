@@ -1,6 +1,6 @@
 # frontend/pages/2_Chatbot_QA.py
 import os
-import sys, os
+import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 
 # Force HF/cache downloads to /tmp on Render (writable)
@@ -154,4 +154,5 @@ if st.button(" Clear Chat"):
     st.session_state.chat_messages = []
     st.session_state.chat_memory = []
     st.success("Chat cleared.")
+
 
