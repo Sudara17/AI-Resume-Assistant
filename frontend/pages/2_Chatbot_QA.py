@@ -1,12 +1,12 @@
 # frontend/pages/2_Chatbot_QA.py
 import os
+# Force HF/cache downloads to /tmp on Render (writable)
 os.environ["TRANSFORMERS_CACHE"] = "/tmp"
 os.environ["HF_HOME"] = "/tmp"
 os.environ["HUGGINGFACE_HUB_CACHE"] = "/tmp"
 os.environ["TORCH_HOME"] = "/tmp"
 os.environ["SENTENCE_TRANSFORMERS_HOME"] = "/tmp"
 
-import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
@@ -14,7 +14,7 @@ import pickle
 import streamlit as st
 from typing import List, Tuple
 
-# LangChain community vectorstore / embeddings (keep these as used previously)
+# LangChain community vectorstore / embeddings
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 
@@ -25,7 +25,7 @@ from app.groq_llm import get_groq_llm
 st.set_page_config(page_title="Resume Chatbot", layout="wide")
 st.title(" Resume-based Chatbot")
 
-# --- Ensure resume is loaded ---
+# --- Ensure resume is loaded into session (stop if not) ---
 if "resume_text" not in st.session_state or "resume_filename" not in st.session_state:
     st.warning("Please upload a resume first.")
     st.stop()
@@ -34,36 +34,23 @@ resume_text = st.session_state.resume_text
 resume_name = st.session_state.resume_filename
 st.success(f" Loaded: {resume_name}")
 
-# --- Vectorstore setup (same as your original code) ---
-if not os.path.exists("data"):
-    os.makedirs("data")
-
-vectorstore_path = "data/resume_embeddings.pkl"
-
-if "vectorstore_built" not in st.session_state:
+# --- Vectorstore setup (persist in session_state so it's re-used across navigation) ---
+if "vectorstore" not in st.session_state:
     with st.spinner("Building vectorstore..."):
         embeddings = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2",
-    model_kwargs={"device": "cpu"},
-    encode_kwargs={
-        "normalize_embeddings": True
-    }
-)
+            model_name="sentence-transformers/all-MiniLM-L6-v2",
+            model_kwargs={"device": "cpu"},
+            encode_kwargs={"normalize_embeddings": True}
+        )
         db = FAISS.from_texts([resume_text], embedding=embeddings)
-        with open(vectorstore_path, "wb") as f:
-            pickle.dump(db, f)
-        st.session_state.vectorstore_built = True
+        st.session_state["vectorstore"] = db
         st.success(" Vectorstore created.")
-
-# load vectorstore
-with open(vectorstore_path, "rb") as f:
-    db = pickle.load(f)
+else:
+    db = st.session_state["vectorstore"]
 
 retriever = db.as_retriever()
 
 # --- Chat memory and messages in session_state (keeps layout identical) ---
-# chat_messages: list of dicts {"role": "user"/"assistant", "content": "..."}
-# chat_memory: list of (user_text, assistant_text) tuples used for context
 if "chat_messages" not in st.session_state:
     st.session_state.chat_messages = []
 
@@ -71,7 +58,7 @@ if "chat_memory" not in st.session_state:
     st.session_state.chat_memory = []  # list of (user, assistant) tuples
 
 # --- LLM (use factory so model is centrally controlled) ---
-llm = get_groq_llm()  # will use your default model in app/groq_llm.py
+llm = get_groq_llm()  # uses default model in app/groq_llm.py
 
 # --- Helper: format chat history into string for prompt context ---
 def format_chat_history(chat_memory: List[Tuple[str, str]]) -> str:
@@ -86,12 +73,14 @@ def format_chat_history(chat_memory: List[Tuple[str, str]]) -> str:
 # --- Core: answer question using retriever + LLM ---
 def answer_question(question: str, chat_memory: List[Tuple[str, str]], retriever, k: int = 4) -> str:
     # 1) retrieve top-k docs
-    docs = retriever.get_relevant_documents(question) if hasattr(retriever, "get_relevant_documents") else retriever.similarity_search(question, k=k)
+    if hasattr(retriever, "get_relevant_documents"):
+        docs = retriever.get_relevant_documents(question)
+    else:
+        docs = retriever.similarity_search(question, k=k)
 
     # 2) build context
     context_parts = []
     for d in docs:
-        # attempt common attributes used by LangChain docs
         content = getattr(d, "page_content", None) or getattr(d, "content", None) or str(d)
         context_parts.append(content.strip())
     context = "\n\n".join(context_parts).strip() or "No relevant context found in the resume."
@@ -117,10 +106,8 @@ Provide a concise, resume-focused answer.
 """
 
     # 5) call LLM
-    # Use LCEL-style pipeline (PromptTemplate|llm) works in your repo; if not, call llm directly
     try:
-        # Many Chat model wrappers accept a raw string; here we try llm.invoke via pipeline
-        # Build simple chain using langchain_core PromptTemplate if available; fallback below
+        # Preferred: try the LCEL pipeline if available
         from langchain_core.prompts import PromptTemplate
         prompt = PromptTemplate(input_variables=["text"], template="{text}")
         chain = prompt | llm
@@ -129,15 +116,13 @@ Provide a concise, resume-focused answer.
             return result.get("output_text") or result.get("text") or str(result)
         return str(result)
     except Exception:
-        # fallback: try calling llm directly
+        # Fallback: call llm directly (some wrappers accept direct call)
         try:
-            # Some wrappers accept (prompt) call
-            resp = llm(prompt_text)  # may return string or object
+            resp = llm(prompt_text)
             if isinstance(resp, dict):
                 return resp.get("output_text") or resp.get("text") or str(resp)
             return str(resp)
         except Exception as e:
-            # last fallback: return error message for debug
             return f"LLM call failed: {e}"
 
 # --- UI: display previous messages ---
@@ -169,4 +154,3 @@ if st.button(" Clear Chat"):
     st.session_state.chat_messages = []
     st.session_state.chat_memory = []
     st.success("Chat cleared.")
-
